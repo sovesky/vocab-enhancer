@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    idea
     id("org.springframework.boot") version "2.2.7.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.72"
@@ -9,7 +10,7 @@ plugins {
     id("net.ltgt.apt") version "0.20"
 }
 
-apply(plugin="net.ltgt.apt-idea")
+// apply(plugin="net.ltgt.apt-idea")
 
 group = "com.sovesky"
 version = "0.0.1-SNAPSHOT"
@@ -44,7 +45,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
-    compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

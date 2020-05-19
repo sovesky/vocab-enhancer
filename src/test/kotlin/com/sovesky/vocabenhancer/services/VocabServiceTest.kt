@@ -69,6 +69,7 @@ class VocabServiceTest {
     fun `Get Synonyms from Thessaurus When String Provided`(){
         // give
         `when`(restTemplate.getForObject<ThessaurusDTO>(anyString(), any())).thenReturn(dto)
+        `when`(vocabRepository.save(any(Vocab::class.java))).thenReturn(vocab)
         // when
         val resVocab = vocabService.getSynonymsFromThessaurus(name)
         // then

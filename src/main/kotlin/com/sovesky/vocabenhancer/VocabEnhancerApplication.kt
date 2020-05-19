@@ -1,5 +1,7 @@
 package com.sovesky.vocabenhancer
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
@@ -9,3 +11,7 @@ class VocabEnhancerApplication
 fun main(args: Array<String>) {
     runApplication<VocabEnhancerApplication>(*args)
 }
+
+fun getLogger(forClass: Class<*>): Logger =
+        LoggerFactory.getLogger(forClass)
+
