@@ -1,5 +1,6 @@
 package com.sovesky.vocabenhancer.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sovesky.vocabenhancer.controller.VocabController
 import com.sovesky.vocabenhancer.dto.vocabdto.VocabDTO
@@ -8,6 +9,8 @@ import com.sovesky.vocabenhancer.services.VocabService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
 import org.springframework.beans.factory.annotation.Autowired
@@ -66,14 +69,18 @@ class VocabControllerTest {
 
     @Test
     fun `improveText - valid request`(){
-        val input = VocabDTO("closure")
+        val input = "closure"
+        val inputVocabDTO = VocabDTO(input)
+
+        `when`(vocabService.parseWord(anyString(), anyMap())).thenReturn(input)
 
         mockMvc.perform(post(VocabController.BASE_URL+"/translation")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(input))
+                .content(objectMapper.writeValueAsString(inputVocabDTO))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk)
+                .andExpect(content().json("{\"text\": \"closure\"}"))
     }
 
 }

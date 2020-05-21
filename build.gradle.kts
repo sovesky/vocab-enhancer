@@ -9,20 +9,18 @@ plugins {
     kotlin("kapt") version "1.3.72"
     id("net.ltgt.apt") version "0.20"
 }
-
 // apply(plugin="net.ltgt.apt-idea")
-
-group = "com.sovesky"
-version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_11
-
 allprojects {
     ext {
         set("mapStructVersion", "1.3.1.Final")
     }
 }
-val mapStructVersion = ext.get("mapStructVersion") as String
 
+group = "com.sovesky"
+version = "0.0.1-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+val mapStructVersion = ext.get("mapStructVersion") as String
 val developmentOnly by configurations.creating
 configurations {
     runtimeClasspath {
@@ -32,6 +30,17 @@ configurations {
         extendsFrom(configurations.annotationProcessor.get())
     }
 }
+
+sourceSets {
+    create("intTest") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+val intTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+configurations["intTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
 
 repositories {
     mavenCentral()
@@ -45,12 +54,17 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
+    implementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+
+    intTestImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    }
+    intTestImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 }
 
 tasks.withType<Test> {
@@ -63,3 +77,15 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "1.8"
     }
 }
+
+val integrationTest = task<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["intTest"].output.classesDirs
+    classpath = sourceSets["intTest"].runtimeClasspath
+    shouldRunAfter("test")
+}
+tasks.check { dependsOn(integrationTest) }
+
+

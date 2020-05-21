@@ -1,5 +1,9 @@
 package com.sovesky.vocabenhancer.services
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.sovesky.vocabenhancer.domain.Vocab
 import com.sovesky.vocabenhancer.dto.thessaurus.Hwi
 import com.sovesky.vocabenhancer.dto.thessaurus.Meta
@@ -21,6 +25,7 @@ import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForObject
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -28,6 +33,7 @@ class VocabServiceTest {
 
     @Mock
     lateinit var vocabRepository: VocabRepository
+
     @Mock
     lateinit var restTemplate: RestTemplate
 
@@ -35,28 +41,28 @@ class VocabServiceTest {
     lateinit var name: String
     lateinit var synonyms: Array<String>
     lateinit var vocab: Vocab
-    lateinit var dto: ThessaurusDTO
+    lateinit var dtoNode: ArrayNode
+    private val objectMapper = ObjectMapper()
 
     @BeforeAll
     internal fun beforeAll() {
         MockitoAnnotations.initMocks(this)
-        vocabService = VocabServiceImpl(vocabRepository, Mappers.getMapper(VocabMapper::class.java), restTemplate)
+        vocabService = VocabServiceImpl(vocabRepository, Mappers.getMapper(VocabMapper::class.java), restTemplate, ObjectMapper())
 
         name = "closure"
-        synonyms = arrayOf("arrest", "cease", "close")
+        synonyms = arrayOf("arrest", "arrestment", "cease")
 
         vocab = Vocab(name = name, synonyms = synonyms.toSet())
                 .apply { vocabRepository.save(this) }
-        dto = ThessaurusDTO()
-                .apply { this.hwi = Hwi().apply { this.hw = name } }
-                .apply { this.meta = Meta().apply { this.syns = listOf(synonyms.toList()) } }
+        val str = "[{\"meta\": {\"id\": \"closure\",\"uuid\": \"e3831577-e362-4be8-9987-3f6e54114f9f\",\"src\": \"coll_thes\",\"section\": \"alpha\",\"target\": {\"tuuid\": \"d6395e4d-1d37-4f5d-a001-7b751349f546\",\"tsrc\": \"collegiate\"},\"stems\": [\"closure\",\"closures\"],\"syns\": [[\"arrest\",\"arrestment\",\"cease\"]],\"ants\": [[\"continuance\",\"continuation\"]],\"offensive\": false}}]"
+        dtoNode = objectMapper.readValue(str) as ArrayNode
 
         // Initializing a @Value annotated variable
         ReflectionTestUtils.setField(vocabService, "thessaurusKey", "mock");
     }
 
     @Test
-    fun `Get Vocab From DB When String Provided`(){
+    fun `Get Vocab From DB When String Provided`() {
         // given
         `when`(vocabRepository.findByName(anyString())).thenReturn(vocab)
         // when
@@ -65,21 +71,22 @@ class VocabServiceTest {
         assertThat(vocab.synonyms, equalTo(resVocab))
     }
 
+
     @Test
-    fun `Get Synonyms from Thessaurus When String Provided`(){
+    fun `Get Synonyms from Thessaurus When String Provided`() {
         // give
-        `when`(restTemplate.getForObject<ThessaurusDTO>(anyString(), any())).thenReturn(dto)
+        `when`(restTemplate.postForObject<ArrayNode>(anyString(), any(), any())).thenReturn(dtoNode)
         `when`(vocabRepository.save(any(Vocab::class.java))).thenReturn(vocab)
         // when
         val resVocab = vocabService.getSynonymsFromThessaurus(name)
         // then
         assertThat(resVocab?.isEmpty(), `is`(false))
-        assertThat(dto.meta?.syns?.get(0)?.toSet(), equalTo(resVocab))
+        assertThat(synonyms.toSet(), equalTo(resVocab))
     }
 
     @Test
-    fun `Get Synonyms Parent Method - from Thessaurus`(){
-        val vocabServiceSpy: VocabService = Mockito.spy(vocabService)
+    fun `Get Synonyms Parent Method - from Thessaurus`() {
+        val vocabServiceSpy: VocabService = spy(vocabService)
         doReturn(setOf<String>()).`when`(vocabServiceSpy).getSynonymsFromDB(anyString())
         doReturn(setOf<String>()).`when`(vocabServiceSpy).getSynonymsFromThessaurus(anyString())
         vocabServiceSpy.getSynonyms("foo")
@@ -88,7 +95,7 @@ class VocabServiceTest {
     }
 
     @Test
-    fun `Get Synonyms Parent Method - from DB`(){
+    fun `Get Synonyms Parent Method - from DB`() {
         val vocabServiceSpy: VocabService = spy(vocabService)
         doReturn(setOf("foo")).`when`(vocabServiceSpy).getSynonymsFromDB(anyString())
         doReturn(setOf<String>()).`when`(vocabServiceSpy).getSynonymsFromThessaurus(anyString())
@@ -98,25 +105,24 @@ class VocabServiceTest {
     }
 
     @Test
-    fun `Test parseWord New Synonym`(){
+    fun `Test parseWord New Synonym`() {
         // given
         val vocabServiceSpy: VocabServiceImpl = spy(vocabService) as VocabServiceImpl
-        vocabServiceSpy.ocurrences = mutableMapOf("closure" to 1)
         doReturn(synonyms.toSet()).`when`(vocabServiceSpy).getSynonyms(anyString())
         // when
-        val word = vocabServiceSpy.parseWord(name)
+        val word = vocabServiceSpy.parseWord(name, mutableMapOf("closure" to 1))
         // then
         verify(vocabServiceSpy, times(1)).getSynonyms(anyString())
         assertThat(word, `is`(synonyms[0]))
     }
 
     @Test
-    fun `Test parseWord Current Word`(){
+    fun `Test parseWord Current Word`() {
         // given
         val vocabServiceSpy: VocabService = spy(vocabService)
         doReturn(emptySet<String>()).`when`(vocabServiceSpy).getSynonyms(anyString())
         // when
-        val word = vocabService.parseWord(name)
+        val word = vocabService.parseWord(name, mutableMapOf())
         // then
         assertThat(word, `is`(name))
     }

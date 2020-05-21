@@ -1,8 +1,6 @@
 package com.sovesky.vocabenhancer.dto.vocabdto
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import lombok.Value
-import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 

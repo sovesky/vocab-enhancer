@@ -14,4 +14,3 @@ fun main(args: Array<String>) {
 
 fun getLogger(forClass: Class<*>): Logger =
         LoggerFactory.getLogger(forClass)
-
