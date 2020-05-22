@@ -12,7 +12,8 @@ plugins {
     kotlin("kapt") version "1.3.72"
     // For Gradle Release
     id("net.researchgate.release") version "2.8.1"
-
+    // Jacoco for test reports
+    id("jacoco")
     // id("net.ltgt.apt") version "0.21"
     // id("net.ltgt.apt-idea") version "0.21"
 }
@@ -96,5 +97,22 @@ val integrationTest = task<Test>("integrationTest") {
     shouldRunAfter("test")
 }
 tasks.check { dependsOn(integrationTest) }
+
+//export test coverage
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+        csv.isEnabled = false
+        html.isEnabled = false
+    }
+}
+
+
 
 
