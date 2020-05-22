@@ -3,11 +3,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     idea
     id("org.springframework.boot") version "2.2.7.RELEASE"
+    // A Gradle plugin that provides Maven-like dependency management and exclusions
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.72"
+    // instead of "kotlin-allopen". Needed to make Kotlin classes open
     kotlin("plugin.spring") version "1.3.72"
+    // Annotation Processing with Kotlin
     kotlin("kapt") version "1.3.72"
-    id("net.ltgt.apt") version "0.20"
+    // For Gradle Release
+    id("net.researchgate.release") version "2.8.1"
+
+    // id("net.ltgt.apt") version "0.21"
+    // id("net.ltgt.apt-idea") version "0.21"
 }
 // apply(plugin="net.ltgt.apt-idea")
 allprojects {
@@ -78,6 +85,8 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+// Add extra task for Integration testing so that it runs separately from
+// normal unit testing
 val integrationTest = task<Test>("integrationTest") {
     description = "Runs integration tests."
     group = "verification"

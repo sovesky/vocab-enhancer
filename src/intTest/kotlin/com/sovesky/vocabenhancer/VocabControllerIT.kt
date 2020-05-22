@@ -58,7 +58,7 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
     @Test
     fun `post request to translate multiple different words`(){
         //Java object to parse to JSON
-        postMap["text"] = "Closure Closure Life Life"
+        postMap["text"] = "closure closure life life"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
 
@@ -69,7 +69,7 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
     @Test
     fun `post request to translate multiple different words with punctuation`(){
         //Java object to parse to JSON
-        postMap["text"] = "Closure Closure, Life Life!"
+        postMap["text"] = "closure closure, life life!"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
 
