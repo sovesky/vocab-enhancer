@@ -10,10 +10,7 @@ import com.sovesky.vocabenhancer.dto.thessaurus.ThessaurusDTO
 // This way we extract only the info we need
 fun buildThessaurusDTOFromJSON(nodeArr: ArrayNode, objectMapper: ObjectMapper): ThessaurusDTO {
     val thessaurusDTO = ThessaurusDTO()
-    if(nodeArr.isArray) {
-        check(nodeArr.size() > 0)
-        val metaNode = nodeArr.get(0).get("meta")
-        thessaurusDTO.apply { meta = objectMapper.convertValue(metaNode, Meta::class.java) }
-    }
+    if(nodeArr.isArray && nodeArr.size() > 0 && nodeArr.get(0).get("meta") != null)
+        thessaurusDTO.meta = objectMapper.convertValue(nodeArr.get(0).get("meta"), Meta::class.java)
     return thessaurusDTO
 }

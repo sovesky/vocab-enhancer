@@ -24,6 +24,6 @@ abstract class VocabMapper {
     )
     abstract fun vocabToThessaurus(vocab: Vocab): ThessaurusDTO
 
-    fun metaSynsToSynonyms(nestedList: List<List<String>>): Set<String> = nestedList.flatten().toSet()
-    fun synonymsToMetaSyns(list: Set<String>): List<List<String>> = mutableListOf(list.toList())
+    fun metaSynsToSynonyms(nestedList: List<List<String>>?): Set<String> = nestedList?.flatten()?.toSet() ?: emptySet()
+    fun synonymsToMetaSyns(list: Set<String>?): List<List<String>>? = mutableListOf(list?.toList() ?: emptyList())
 }

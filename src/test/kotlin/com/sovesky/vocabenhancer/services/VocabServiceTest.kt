@@ -54,8 +54,8 @@ class VocabServiceTest {
 
         vocab = Vocab(name = name, synonyms = synonyms.toSet())
                 .apply { vocabRepository.save(this) }
-        val str = "[{\"meta\": {\"id\": \"closure\",\"uuid\": \"e3831577-e362-4be8-9987-3f6e54114f9f\",\"src\": \"coll_thes\",\"section\": \"alpha\",\"target\": {\"tuuid\": \"d6395e4d-1d37-4f5d-a001-7b751349f546\",\"tsrc\": \"collegiate\"},\"stems\": [\"closure\",\"closures\"],\"syns\": [[\"arrest\",\"arrestment\",\"cease\"]],\"ants\": [[\"continuance\",\"continuation\"]],\"offensive\": false}}]"
-        dtoNode = objectMapper.readValue(str) as ArrayNode
+        val strFound = "[{\"meta\": {\"id\": \"closure\",\"uuid\": \"e3831577-e362-4be8-9987-3f6e54114f9f\",\"src\": \"coll_thes\",\"section\": \"alpha\",\"target\": {\"tuuid\": \"d6395e4d-1d37-4f5d-a001-7b751349f546\",\"tsrc\": \"collegiate\"},\"stems\": [\"closure\",\"closures\"],\"syns\": [[\"arrest\",\"arrestment\",\"cease\"]],\"ants\": [[\"continuance\",\"continuation\"]],\"offensive\": false}}]"
+        dtoNode = objectMapper.readValue(strFound) as ArrayNode
 
         // Initializing a @Value annotated variable
         ReflectionTestUtils.setField(vocabService, "thessaurusKey", "mock");
@@ -82,6 +82,19 @@ class VocabServiceTest {
         // then
         assertThat(resVocab?.isEmpty(), `is`(false))
         assertThat(synonyms.toSet(), equalTo(resVocab))
+    }
+
+    @Test
+    fun `Get Synonyms from Thessaurus When String Provided No Results`() {
+        // give
+        val strNotFound = "[\"Galahad\",\"Galahads\",\"mahatmas\",\"shahs\"]"
+        val dtoNodeNotFound = objectMapper.readValue(strNotFound) as ArrayNode
+        `when`(restTemplate.postForObject<ArrayNode>(anyString(), any(), any())).thenReturn(dtoNodeNotFound)
+        `when`(vocabRepository.save(any(Vocab::class.java))).thenReturn(vocab)
+        // when
+        val resVocab = vocabService.getSynonymsFromThessaurus(name)
+        // then
+        assertThat(resVocab?.isEmpty(), `is`(true))
     }
 
     @Test

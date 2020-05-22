@@ -74,11 +74,11 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
         logger.debug("Target Thessaurus URL: '$ucb'")
         val node: ArrayNode = rt.postForObject(ucb)
         logger.trace(node.toPrettyString())
-        val thessaurusDTO = buildThessaurusDTOFromJSON(node, objectMapper)
-        check(thessaurusDTO.meta != null)
-        { "Unexpected response format from Thessaurus" } // todo refactor this
-        val vocab: Vocab = vocabMapper.thessaurusToVocab(thessaurusDTO)
+        val a = buildThessaurusDTOFromJSON(node, objectMapper)
+        val vocab: Vocab = vocabMapper.thessaurusToVocab(a)
         vocabRepository.save(vocab)
+        // If response from Thessaurus has no synonyms (e.g. names)
+        // we don't care and keep the original word
         return vocab.synonyms ?: emptySet()
     }
 
