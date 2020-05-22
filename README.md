@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/sovesky/vocab-enhancer.svg?style=shield&circle-token=e13fd7c6057aec9cc74c760b2a4182ac96c3a1c2)](https://app.circleci.com/pipelines/github/sovesky/vocab-enhancer)
 [![codecov](https://codecov.io/gh/sovesky/vocab-enhancer/branch/master/graph/badge.svg)](https://codecov.io/gh/sovesky/vocab-enhancer)
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sovesky_vocab-enhancer&metric=alert_status)](https://sonarcloud.io/dashboard?id=sovesky_vocab-enhancer)
 
 # Vocab-enhancer
 Learning project that involves Spring Boot, Kotlin, MongoDB and Mockito with JUnit 5.
