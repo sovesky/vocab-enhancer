@@ -37,12 +37,14 @@ class VocabControllerTest {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+    val translateOperation = "/translation"
+
     @Test
     fun `improveText - Exception thrown`(){
         val input = VocabDTO("")
 
         // Empty String
-        mockMvc.perform(post(VocabController.BASE_URL+"/translation")
+        mockMvc.perform(post(VocabController.BASE_URL+translateOperation)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(input))
                 .accept(MediaType.APPLICATION_JSON))
@@ -50,7 +52,7 @@ class VocabControllerTest {
                 .andExpect(status().isBadRequest)
 
         // Null body
-        mockMvc.perform(post(VocabController.BASE_URL+"/translation")
+        mockMvc.perform(post(VocabController.BASE_URL+translateOperation)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(null))
                 .accept(MediaType.APPLICATION_JSON))
@@ -58,7 +60,7 @@ class VocabControllerTest {
                 .andExpect(status().isBadRequest)
 
         // Small string
-        mockMvc.perform(post(VocabController.BASE_URL+"/translation")
+        mockMvc.perform(post(VocabController.BASE_URL+translateOperation)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(input.apply { name = ".." }))
                 .accept(MediaType.APPLICATION_JSON))
@@ -74,7 +76,7 @@ class VocabControllerTest {
 
         `when`(vocabService.parseWord(anyString(), anyMap())).thenReturn(input)
 
-        mockMvc.perform(post(VocabController.BASE_URL+"/translation")
+        mockMvc.perform(post(VocabController.BASE_URL+translateOperation)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(inputVocabDTO))
                 .accept(MediaType.APPLICATION_JSON))

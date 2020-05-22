@@ -7,7 +7,4 @@ interface VocabService {
     fun getSynonyms(name: String): Set<String>?
     fun getSynonymsFromThessaurus(name: String): Set<String>?
     fun getSynonymsFromDB(name: String): Set<String>?
-//    fun getVocab(name: String): Vocab?
-//    fun addVocab(vocab: Vocab): Vocab
-//    fun updateVocab(vocab: Vocab): Vocab
 }
