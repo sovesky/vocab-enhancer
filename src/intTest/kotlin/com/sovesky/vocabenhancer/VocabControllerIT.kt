@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.sovesky.vocabenhancer.controller.VocabController
 import com.sovesky.vocabenhancer.services.VocabService
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -34,7 +33,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate single word`(){
-        //Java object to parse to JSON
         postMap["text"] = "closure"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -46,7 +44,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate multiple repeated words`(){
-        //Java object to parse to JSON
         postMap["text"] = "closure closure closure"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -57,7 +54,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate multiple different words`(){
-        //Java object to parse to JSON
         postMap["text"] = "closure closure life life"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -68,7 +64,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate multiple different words with punctuation`(){
-        //Java object to parse to JSON
         postMap["text"] = "closure closure, life life!"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -79,7 +74,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate multiple punctuation`(){
-        //Java object to parse to JSON
         postMap["text"] = "!,\\.<\"$^*"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -90,7 +84,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate multiple spaces`(){
-        //Java object to parse to JSON
         postMap["text"] = "       "
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -101,7 +94,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate multiple words with different capitalizations`(){
-        //Java object to parse to JSON
         postMap["text"] = "closure CLOSURE Closure"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
@@ -112,7 +104,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
 
     @Test
     fun `post request to translate words with synonym appending`(){
-        //Java object to parse to JSON
         postMap["text"] = "closure closure closure"
 
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}?append=true", postMap, JsonNode::class.java)
@@ -120,5 +111,16 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
         assertThat(jsonNode.statusCode, equalTo(HttpStatus.OK));
         assertThat(jsonNode.body?.get("text")?.asText(), `is`("closure closure<arrest> closure<arrestment>"))
     }
+
+    @Test
+    fun `post request to translate words with failed input validation`(){
+        postMap["text"] = ".."
+
+        val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
+
+        assertThat(jsonNode.statusCode, equalTo(HttpStatus.BAD_REQUEST));
+        assertThat(jsonNode.body?.get("errors")?.get("name")?.asText(), not(nullValue()))
+    }
+
 
 }

@@ -149,6 +149,6 @@ class VocabServiceTest {
         // when
         val word = vocabService.parseWord(smallWord, mutableMapOf())
         // then
-        assertThat(word, `is`(name))
+        assertThat(word, `is`(".."))
     }
 }
