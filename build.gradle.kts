@@ -14,13 +14,15 @@ plugins {
     id("net.researchgate.release") version "2.8.1"
     // Jacoco for test reports
     id("jacoco")
-    // id("net.ltgt.apt") version "0.21"
-    // id("net.ltgt.apt-idea") version "0.21"
+    // OpenApi 3 plugin
+    id("com.github.johnrengelman.processes") version "0.5.0"
+    id("org.springdoc.openapi-gradle-plugin") version "1.2.0"
 }
 // apply(plugin="net.ltgt.apt-idea")
 allprojects {
     ext {
         set("mapStructVersion", "1.3.1.Final")
+        set("springDocOpenApi", "1.3.9")
     }
 }
 
@@ -29,6 +31,7 @@ version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 val mapStructVersion = ext.get("mapStructVersion") as String
+val springDocOpenApi = ext.get("springDocOpenApi") as String
 val developmentOnly by configurations.creating
 configurations {
     runtimeClasspath {
@@ -68,11 +71,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-
     intTestImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     intTestImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+    runtimeOnly("org.springdoc:springdoc-openapi-ui:$springDocOpenApi")
+    runtimeOnly("org.springdoc:springdoc-openapi-kotlin:$springDocOpenApi")
+    // Possibly other springdoc related dependencies like Spring Security
 }
 
 tasks.withType<Test> {

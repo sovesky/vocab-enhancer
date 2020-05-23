@@ -139,4 +139,16 @@ class VocabServiceTest {
         // then
         assertThat(word, `is`(name))
     }
+
+    @Test
+    fun `Test parseWord Small Word`() {
+        // given
+        val smallWord = ".."
+        val vocabServiceSpy: VocabService = spy(vocabService)
+        doReturn(emptySet<String>()).`when`(vocabServiceSpy).getSynonyms(anyString())
+        // when
+        val word = vocabService.parseWord(smallWord, mutableMapOf())
+        // then
+        assertThat(word, `is`(name))
+    }
 }
