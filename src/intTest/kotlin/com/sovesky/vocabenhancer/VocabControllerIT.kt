@@ -121,6 +121,4 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
         assertThat(jsonNode.statusCode, equalTo(HttpStatus.BAD_REQUEST));
         assertThat(jsonNode.body?.get("errors")?.get("name")?.asText(), not(nullValue()))
     }
-
-
 }
