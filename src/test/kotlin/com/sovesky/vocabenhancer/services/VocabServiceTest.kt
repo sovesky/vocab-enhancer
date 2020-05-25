@@ -1,13 +1,9 @@
 package com.sovesky.vocabenhancer.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.sovesky.vocabenhancer.domain.Vocab
-import com.sovesky.vocabenhancer.dto.thessaurus.Hwi
-import com.sovesky.vocabenhancer.dto.thessaurus.Meta
-import com.sovesky.vocabenhancer.dto.thessaurus.ThessaurusDTO
 import com.sovesky.vocabenhancer.mapper.VocabMapper
 import com.sovesky.vocabenhancer.repositories.VocabRepository
 import org.hamcrest.MatcherAssert.assertThat
@@ -20,12 +16,10 @@ import org.mapstruct.factory.Mappers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.postForObject
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

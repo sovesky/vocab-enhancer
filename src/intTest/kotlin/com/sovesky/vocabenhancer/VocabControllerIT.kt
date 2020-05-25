@@ -13,10 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
 import java.util.*
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("dev")
 class VocabControllerIT @Autowired constructor (private val testRestTemplate: TestRestTemplate,
                                                 private val vocabService: VocabService){
 

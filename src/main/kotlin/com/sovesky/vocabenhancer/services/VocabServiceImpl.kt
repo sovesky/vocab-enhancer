@@ -8,6 +8,7 @@ import com.sovesky.vocabenhancer.mapper.buildThessaurusDTOFromJSON
 import com.sovesky.vocabenhancer.repositories.VocabRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
@@ -39,7 +40,7 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
         logger.debug("New word to be parsed '$name'")
 
         // We don't want to translate spaces, digits, punctuation and basic words
-        if (name.length < 2) return name
+        if (name.length <= 2) return name
 
         val wordCount = occurrences[name.toLowerCase()]
         val result = wordCount?.let {
@@ -58,6 +59,7 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
         }
     }
 
+    @Cacheable("vocabs")
     override fun getSynonyms(name: String): Set<String> {
         var set = getSynonymsFromDB(name)
         if (set.isEmpty()) {

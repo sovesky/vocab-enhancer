@@ -23,19 +23,19 @@ class VocabMapperTest{
                 lastUpdate =  LocalDateTime.now())
         val thessaurusVocab = vocabMapper.vocabToThessaurus(vocab)
 
-        assertThat(vocab.name, equalTo(thessaurusVocab.hwi?.hw))
+        assertThat(vocab.name, equalTo(thessaurusVocab.meta?.id))
         assertThat(vocab.synonyms, hasSize(thessaurusVocab.meta!!.syns!![0].size))
     }
 
     @Test
     fun thessaurusDTOToVocab(){
         var thessaurus = ThessaurusDTO()
-                .apply { this.hwi = Hwi().also { it.hw = "closure" } }
-                .apply { this.meta = Meta().also { it.syns = listOf(listOf("arrest","cease", "close")) } }
+                .apply { this.meta = Meta().also { it.syns = listOf(listOf("arrest","cease", "close")) }
+                                           .also { it.id = "closure" }}
 
         val vocab = vocabMapper.thessaurusToVocab(thessaurus)
 
-        assertThat(thessaurus.hwi?.hw, equalTo(vocab.name))
+        assertThat(thessaurus.meta?.id, equalTo(vocab.name))
         assertThat(thessaurus.meta!!.syns!![0], hasSize(vocab.synonyms!!.size))
     }
 }

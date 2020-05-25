@@ -10,13 +10,13 @@ abstract class VocabMapper {
     @Mappings(
             Mapping(target = "_id", ignore = true),
             Mapping(target = "lastUpdate", ignore = true),
-            Mapping(source = "hwi.hw", target = "name"),
+            Mapping(source = "meta.id", target = "name"),
             Mapping(source = "meta.syns", target = "synonyms")
     )
     abstract fun thessaurusToVocab(thessaurusDTO: ThessaurusDTO): Vocab
 
     @Mappings(
-            Mapping(target = "hwi.hw", source = "name"),
+            Mapping(target = "meta.id", source = "name"),
             Mapping(target = "meta.syns", source = "synonyms"),
             Mapping(target = "fl", ignore = true),
             Mapping(target = "def", ignore = true),
