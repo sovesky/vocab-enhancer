@@ -37,20 +37,18 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
     // 5. Else, get to next Synonym and repeat
     // 6. No synonyms available, return same word and increase count
     override fun parseWord(name: String, occurrences: MutableMap<String, Int>): String {
-        logger.debug("New word to be parsed '$name'")
-
         // We don't want to translate spaces, digits, punctuation and basic words
         if (name.length <= 2) return name
 
+        logger.debug("New word to be parsed '$name'")
         val wordCount = occurrences[name.toLowerCase()]
         val result = wordCount?.let {
-            logger.debug("Word '$name' ocurrence exists")
             getSynonyms(name.toLowerCase())
                     .find { occurrences.getOrDefault(it, 0) < wordCount }
                     ?.apply { occurrences[this] = occurrences.getOrDefault(this, 0) + 1 }
                     ?: name.also { logger.debug("Replacing word '$name' with new word '$it'") }
         } ?: name.apply { occurrences[name.toLowerCase()] = 1 }
-                .also { logger.debug("First ocurrence of word '$name'") }
+                .also { logger.debug("First occurrence of word '$name'") }
 
         return when {
             name.all { it.isUpperCase() } -> result.toUpperCase()
@@ -61,6 +59,7 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
 
     @Cacheable("vocabs")
     override fun getSynonyms(name: String): Set<String> {
+        logger.debug("Word '$name' occurrence exists")
         var set = getSynonymsFromDB(name)
         if (set.isEmpty()) {
             set = getSynonymsFromThessaurus(name)
@@ -85,7 +84,7 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
     }
 
     override fun getSynonymsFromDB(name: String): Set<String> {
-        logger.debug("Checking wird '$name' within DB...")
+        logger.debug("Checking word '$name' within DB...")
         return vocabRepository.findByName(name)?.synonyms.also { logger.debug("Word found in DB!") }
                 ?: emptySet()
     }

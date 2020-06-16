@@ -2,34 +2,37 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
+
     id("org.springframework.boot") version "2.2.7.RELEASE"
+
     // A Gradle plugin that provides Maven-like dependency management and exclusions
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
+
     kotlin("jvm") version "1.3.72"
+
     // instead of "kotlin-allopen". Needed to make Kotlin classes open
     kotlin("plugin.spring") version "1.3.72"
+
     // Annotation Processing with Kotlin
     kotlin("kapt") version "1.3.72"
+
     // For Gradle Release
     id("net.researchgate.release") version "2.8.1"
+
     // Jacoco for test reports
     id("jacoco")
-    // OpenApi 3 plugin
+
+    // OpenApi 3 plugins
     id("com.github.johnrengelman.processes") version "0.5.0"
     id("org.springdoc.openapi-gradle-plugin") version "1.2.0"
-}
-// apply(plugin="net.ltgt.apt-idea")
-allprojects {
-    ext {
-        set("mapStructVersion", "1.3.1.Final")
-        set("springDocOpenApi", "1.3.9")
-    }
+
+    // Jib tool to containarize project
+    id("com.google.cloud.tools.jib") version "2.3.0"
+
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11
 
-val mapStructVersion = ext.get("mapStructVersion") as String
-val springDocOpenApi = ext.get("springDocOpenApi") as String
 val developmentOnly by configurations.creating
 configurations {
     runtimeClasspath {
@@ -40,6 +43,7 @@ configurations {
     }
 }
 
+// Defining integration testing task
 sourceSets {
     create("intTest") {
         compileClasspath += sourceSets.main.get().output
@@ -50,6 +54,11 @@ val intTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 configurations["intTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
+
+// Build info added to Spring actuator http://<url>:<port>/actuator/info
+springBoot {
+    buildInfo()
+}
 
 repositories {
     mavenCentral()
@@ -63,9 +72,15 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.mapstruct:mapstruct:$mapStructVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+
+    val mapStructVersion = "1.3.1.Final"
+    implementation("org.mapstruct:mapstruct:$mapStructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
+
+
+
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
@@ -73,6 +88,8 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     intTestImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+
+    val springDocOpenApi = "1.3.9"
     runtimeOnly("org.springdoc:springdoc-openapi-ui:$springDocOpenApi")
     runtimeOnly("org.springdoc:springdoc-openapi-kotlin:$springDocOpenApi")
     // Possibly other springdoc related dependencies like Spring Security
@@ -115,6 +132,9 @@ tasks.jacocoTestReport {
         html.isEnabled = false
     }
 }
+
+// JIB configuration
+ jib.to.image = "andrefonsecavieira/vocab-enhancer"
 
 
 
