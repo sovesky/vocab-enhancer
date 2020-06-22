@@ -24,6 +24,8 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
     @Value("\${thessaurus.apikey}")
     lateinit var thessaurusKey: String
 
+    // Equivalent static final. We could put the URL in the application.properties file
+    // or in real life in a Service Registry like Eureka.
     companion object {
         const val THESSAURUS_BASE_URL = "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/"
     }

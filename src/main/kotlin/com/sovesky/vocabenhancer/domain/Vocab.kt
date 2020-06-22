@@ -7,6 +7,6 @@ import java.time.LocalDateTime
 
 @Document(collection = "vocab")
 data class Vocab(@Id var _id: ObjectId? = null, var name: String?, var synonyms: Set<String>?, var lastUpdate: LocalDateTime? = null) {
-    // Necessary for MapStruct
+    // Necessary for MapStruct to unmarshall the message into the class
     constructor() : this(null, null, null, null)
 }

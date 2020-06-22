@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate
 
 @Configuration
 class CustomConfig {
+    // This way we don't have to create a new instance of a class for each incoming request
+
     @Bean
     fun restTemplate(rtb: RestTemplateBuilder): RestTemplate{
         return rtb.build()
