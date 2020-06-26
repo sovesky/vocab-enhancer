@@ -31,13 +31,11 @@ class VocabControllerTest {
     @MockBean
     lateinit var vocabService: VocabService
     @Autowired
-    lateinit var vocabController: VocabController
-    @Autowired
     lateinit var mockMvc: MockMvc
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    val translateOperation = "/translation"
+    private val translateOperation = "/translation"
 
     @Test
     fun `improveText - Exception thrown`(){

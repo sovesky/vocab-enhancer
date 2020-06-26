@@ -19,8 +19,7 @@ import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-class VocabControllerIT @Autowired constructor (private val testRestTemplate: TestRestTemplate,
-                                                private val vocabService: VocabService){
+class VocabControllerIT @Autowired constructor (private val testRestTemplate: TestRestTemplate){
 
     @LocalServerPort
     private var port: Int = 0
