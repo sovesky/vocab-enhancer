@@ -20,6 +20,7 @@ abstract class VocabMapper {
             Mapping(target = "meta.syns", source = "synonyms"),
             Mapping(target = "fl", ignore = true),
             Mapping(target = "def", ignore = true),
+            Mapping(target = "hwi", ignore = true),
             Mapping(target = "shortdef", ignore = true)
     )
     abstract fun vocabToThessaurus(vocab: Vocab): ThessaurusDTO

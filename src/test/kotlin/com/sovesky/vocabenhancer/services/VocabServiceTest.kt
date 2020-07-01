@@ -53,6 +53,7 @@ class VocabServiceTest {
 
         // Initializing a @Value annotated variable
         ReflectionTestUtils.setField(vocabService, "thessaurusKey", "mock");
+        ReflectionTestUtils.setField(vocabService, "thessaurusBaseUrl", "mock");
     }
 
     @Test
