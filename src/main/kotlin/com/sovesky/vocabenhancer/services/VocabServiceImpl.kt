@@ -24,11 +24,8 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
     @Value("\${thessaurus.apikey}")
     lateinit var thessaurusKey: String
 
-    // Equivalent static final. We could put the URL in the application.properties file
-    // or in real life in a Service Registry like Eureka.
-    companion object {
-        const val THESSAURUS_BASE_URL = "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/"
-    }
+    @Value("\${thessaurus.baseurl}")
+    lateinit var thessaurusBaseUrl: String
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -72,7 +69,7 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
 
     override fun getSynonymsFromThessaurus(name: String): Set<String> {
         logger.debug("Getting synonyms from Thessaurus for word '$name'")
-        val ucb = UriComponentsBuilder.fromUriString("$THESSAURUS_BASE_URL$name")
+        val ucb = UriComponentsBuilder.fromUriString("$thessaurusBaseUrl$name")
                 .queryParam("key", thessaurusKey).toUriString()
         logger.debug("Target Thessaurus URL: '$ucb'")
         val node: ArrayNode = rt.postForObject(ucb)
