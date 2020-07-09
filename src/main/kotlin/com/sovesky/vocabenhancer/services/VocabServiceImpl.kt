@@ -6,6 +6,7 @@ import com.sovesky.vocabenhancer.domain.Vocab
 import com.sovesky.vocabenhancer.mapper.VocabMapper
 import com.sovesky.vocabenhancer.mapper.buildThessaurusDTOFromJSON
 import com.sovesky.vocabenhancer.repositories.VocabRepository
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
+import kotlin.coroutines.CoroutineContext
 
 
 @Service
@@ -42,12 +44,12 @@ class VocabServiceImpl(private val vocabRepository: VocabRepository,
         logger.debug("New word to be parsed '$name'")
         val wordCount = occurrences[name.toLowerCase()]
         val result = wordCount?.let {
-            getSynonyms(name.toLowerCase())
-                    .find { occurrences.getOrDefault(it, 0) < wordCount }
-                    ?.apply { occurrences[this] = occurrences.getOrDefault(this, 0) + 1 }
-                    ?: name.also { logger.debug("Replacing word '$name' with new word '$it'") }
-        } ?: name.apply { occurrences[name.toLowerCase()] = 1 }
-                .also { logger.debug("First occurrence of word '$name'") }
+                getSynonyms(name.toLowerCase())
+                        .find { occurrences.getOrDefault(it, 0) < wordCount }
+                        ?.apply { occurrences[this] = occurrences.getOrDefault(this, 0) + 1 }
+                        ?: name.also { logger.debug("Replacing word '$name' with new word '$it'") }
+            } ?: name.apply { occurrences[name.toLowerCase()] = 1 }
+                    .also { logger.debug("First occurrence of word '$name'") }
 
         return when {
             name.all { it.isUpperCase() } -> result.toUpperCase()

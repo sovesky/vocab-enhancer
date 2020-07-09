@@ -60,7 +60,7 @@ class VocabControllerTest {
         // Small string
         mockMvc.perform(post(VocabController.BASE_URL+translateOperation)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(input.apply { name = ".." }))
+                .content(objectMapper.writeValueAsString(input.apply { text = ".." }))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest)

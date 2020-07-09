@@ -120,6 +120,6 @@ class VocabControllerIT @Autowired constructor (private val testRestTemplate: Te
         val jsonNode = testRestTemplate.postForEntity("${getRootUrl()}${requestOperation}", postMap, JsonNode::class.java)
 
         assertThat(jsonNode.statusCode, equalTo(HttpStatus.BAD_REQUEST));
-        assertThat(jsonNode.body?.get("errors")?.get("name")?.asText(), not(nullValue()))
+        assertThat(jsonNode.body?.get("errors")?.get("text")?.asText(), not(nullValue()))
     }
 }
